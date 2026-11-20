@@ -515,6 +515,9 @@ button.dlink{border:0;background:none;padding:0;font:inherit;cursor:pointer}
 .collhead b{font-family:var(--display);font-stretch:85%;font-size:30px}
 .collrow{grid-template-columns:56px 1fr auto}
 .collbtns{display:grid;gap:2px;justify-items:end}
+.collact{position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:2px}
+.sellmini{border:0;background:var(--orange);color:#fff;font-weight:700;font-size:12.5px;border-radius:999px;padding:5px 11px;cursor:pointer}
+.collact .x{font-size:14px;padding:4px 6px}
 .shophead{display:flex;gap:14px;align-items:center;padding:14px}
 .shophead.isshop{border-color:#c3d8f5;background:linear-gradient(135deg,#eef4ff,var(--surface))}
 .shopinfo{display:flex;gap:10px;align-items:center;padding:10px 14px}
@@ -1464,7 +1467,20 @@ V.coll = () => {
   return `<div class="pad">
     <div class="card collhead"><span class="small muted">Becsült érték</span><b>${ft(cv)}</b><span class="small muted">${rs.length} lemez · az eladott példányok mediánja alapján</span></div>
     <p class="small muted" style="margin:0">Egy album katalóguslapján a „Megvan” gombbal veheted fel. Bármelyiket egy gombnyomással eladásra teheted – az adatai már ki vannak töltve.</p>
-    ${rs.length?`<div class="list card" style="padding:0 14px">${rs.map(r=>`<div class="lrow collrow">${cover(r)}<span data-act="go" data-v="release" data-id="${r.id}" style="cursor:pointer"><span class="t">${esc(r.t)}</span><br><span class="s">${esc(r.a)} · ${r.f[0]}</span><br><span class="s">kb. <b style="color:var(--ink)">${ft(estValue(r))}</b></span></span><span class="collbtns"><button class="btn" style="padding:8px 12px" data-act="sellthis" data-id="${r.id}">Eladom</button><button class="x" data-act="collect" data-id="${r.id}">Kivesz</button></span></div>`).join('')}</div>`:'<div class="card empty">Még üres a gyűjteményed.</div>'}
+    ${rs.length?`<div class="llist">${rs.map(r=>`<div class="llw">
+      <button class="llrow" data-act="go" data-v="release" data-id="${r.id}">
+        <span class="llthumb">${cover(r)}</span>
+        <span class="llmeta">
+          <span class="fl">${r.f[0]}${r.f[0]==='Vinyl'?' · LP · 12"':''}</span>
+          <span class="t">${esc(r.a)}</span>
+          <span class="a">${esc(r.t)}</span>
+          <span class="yr">${[esc(ccode(r.c||'')),r.y,esc(r.l||'')].filter(Boolean).join(' · ')||'&nbsp;'}</span>
+          <span class="llbot"><span class="small muted">${mainGenre(r)}</span></span>
+        </span>
+        <span class="llright"><span class="small muted">becsült érték</span><span class="price">${ft(estValue(r))}</span></span>
+      </button>
+      <span class="collact"><button class="sellmini" data-act="sellthis" data-id="${r.id}">Eladom</button><button class="x" data-act="collect" data-id="${r.id}" aria-label="Kivétel a gyűjteményből">✕</button></span>
+    </div>`).join('')}</div>`:'<div class="card empty">Még üres a gyűjteményed.</div>'}
     <button class="btn ghost block" data-act="go" data-v="search">+ Lemez keresése a katalógusban</button>
   </div>`;
 };
