@@ -706,6 +706,7 @@ body.web .docov{position:fixed}
 body.web #genrebar,body.web .chips{scrollbar-width:thin}
 body.web #genrebar::-webkit-scrollbar,body.web .chips::-webkit-scrollbar{height:6px;display:block}
 body.web #genrebar::-webkit-scrollbar-thumb,body.web .chips::-webkit-scrollbar-thumb{background:#c9c2b6;border-radius:9px}
+.manualcta{border:1.5px dashed var(--line)}
 </style>
 </head>
 <body>
@@ -1602,8 +1603,8 @@ V.sell = () => {
       <button class="scancta" data-act="scan">${I.camera}<span><b>Fotózd le, felismerjük</b><br><span class="small muted">Megtaláljuk a katalógusban, és árat is javaslunk</span></span><span class="muted">›</span></button>
       <div><h2>Vagy keresd meg kézzel</h2><p class="muted small" style="margin:4px 0 0">Keresd meg a katalógusban. Így a vevők pontosan látják, melyik kiadásról van szó, és ár-javaslatot is kapsz.</p></div>
       <label class="searchbar" for="sellq">${I.search}<input id="sellq" type="search" placeholder="pl. Omega, Kind of Blue, Pepita…" value="${esc(s.q)}" autocomplete="off"></label>
+      <button class="card homecta manualcta" data-act="manualrel"><span><b>${LL('Nincs a katalógusban?','Not in the catalog?')}</b><br><span class="small muted">${LL('Add meg kézzel – közzétételkor felkerül a közös katalógusba.','Enter it by hand – it joins the shared catalog when you publish.')}</span></span><span class="muted">›</span></button>
       <div id="sellres">${sellResults()}</div>
-      <button class="card homecta" data-act="manualrel"><span><b>${LL('Nincs a katalógusban?','Not in the catalog?')}</b><br><span class="small muted">${LL('Add meg kézzel – közzétételkor felkerül a közös katalógusba.','Enter it by hand – it joins the shared catalog when you publish.')}</span></span><span class="muted">›</span></button>
     </div>`;
   }
   const r=rel(s.rid);
