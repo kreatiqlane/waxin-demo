@@ -887,9 +887,10 @@ button.reportlink{background:none;border:0;padding:0;font:inherit;cursor:pointer
 .potd-f{gap:8px}.potd-f b{font-size:15px}.potd-f .btn.sm{padding:6px 11px;font-size:13px}.potd-f .potd-l{padding:5px 10px;font-size:12px}
 body.web .potd{grid-template-columns:150px minmax(0,1fr);gap:22px;padding:20px 24px}body.web .potd h2{font-size:26px}body.web .potd-n{display:block}
 /* 1.42 – hirdetésszám kicsiben a logó alatt */
-.lw .livecnt{display:flex;align-items:center;gap:4px;margin-top:3px;padding:0;border:0;background:none;font:inherit;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;line-height:1;letter-spacing:0;text-transform:none;font-stretch:100%;font-family:var(--body,inherit)}
-.lw .livecnt b{color:#e8650a;font-weight:900;font-size:11.5px;font-variant-numeric:tabular-nums}
-.lw .livecnt i{width:6px;height:6px;border-radius:50%;background:#2fbf71;animation:alive 1.8s infinite}
+.logo:has(.livecnt){display:grid;grid-template-columns:auto auto;column-gap:6px;row-gap:1px;align-items:center;justify-content:start}
+.logo .livecnt{grid-column:1/-1;display:flex;align-items:center;gap:4px;margin-top:3px;padding:0;border:0;background:none;font:inherit;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;line-height:1;letter-spacing:0;text-transform:none;font-stretch:100%;font-family:var(--body,inherit)}
+.logo .livecnt b{color:#e8650a;font-weight:900;font-size:11.5px;font-variant-numeric:tabular-nums}
+.logo .livecnt i{width:6px;height:6px;border-radius:50%;background:#2fbf71;animation:alive 1.8s infinite}
 </style>
 </head>
 <body>
@@ -2627,7 +2628,7 @@ function render(top=false){
   const canBack = S.stack.length>0;
   document.getElementById('topbar').innerHTML =
     (canBack?`<button class="iconbtn" data-act="back" aria-label="Vissza">${I.back}</button><span class="ttl">${S.view==='chat'?'@'+S.threads.find(t=>t.id===S.params.id).who:(TITLES[S.view]||'')}</span>`
-      : S.view==='home'?`<span class="logo"><span class="logodisc tt2" aria-hidden="true"><img class="ttrec" src="img/logo_record.png" alt=""><img class="ttarm" src="img/logo_arm.png" alt=""></span><span class="lw"><b>waxin</b><small>Vinyl. People. Culture.</small><button class="livecnt" data-act="go" data-v="search" title="${LL('Ennyi hirdetés érhető el most a börzén','Listings available on the fair right now')}"><i aria-hidden="true"></i><b>${active().length.toLocaleString(LL('hu-HU','en-GB'))}</b> ${LL('eladó lemez','for sale')}</button></span></span><span class="spacer"></span>`
+      : S.view==='home'?`<span class="logo"><span class="logodisc tt2" aria-hidden="true"><img class="ttrec" src="img/logo_record.png" alt=""><img class="ttarm" src="img/logo_arm.png" alt=""></span><span class="lw"><b>waxin</b><small>Vinyl. People. Culture.</small></span><button class="livecnt" data-act="go" data-v="search" title="${LL('Ennyi hirdetés érhető el most a börzén','Listings available on the fair right now')}"><i aria-hidden="true"></i><b>${active().length.toLocaleString(LL('hu-HU','en-GB'))}</b> Waxin Drop</button></span><span class="spacer"></span>`
       : `<span class="ttl" style="font-family:var(--display);font-stretch:85%;font-weight:800;font-size:22px">${TITLES[S.view]}</span>`)
     + (S.view!=='notifs'&&S.view!=='chat'?`<button class="iconbtn" data-act="go" data-v="notifs" aria-label="Értesítések">${I.bell}${unreadNotifs()?`<span class="badge" style="background:var(--orange)">${unreadNotifs()}</span>`:''}</button>`:'')
     + (S.view!=='wish'&&S.view!=='chat'?`<button class="iconbtn" data-act="go" data-v="wish" aria-label="Kívánságlista">${I.heart}${S.wish.size?`<span class="badge">${S.wish.size}</span>`:''}</button>`:'')
