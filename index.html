@@ -865,6 +865,27 @@ button.reportlink{background:none;border:0;padding:0;font:inherit;cursor:pointer
 .pq{position:absolute;left:4px;top:4px;z-index:2;font-style:normal;font-size:10px;font-weight:800;padding:2px 6px;border-radius:99px;background:#1f9d55;color:#fff;white-space:nowrap;max-width:calc(100% - 8px);overflow:hidden;text-overflow:ellipsis}
 .pq.warn{background:#e8a317;color:#1a1a1a}.pq.bad{background:#c8102e}
 .pslot.qbad{border-color:#c8102e!important;border-width:2.5px}
+/* 1.40 – kompakt Most pörög és kisebb napi ajánló az appban */
+.hplist{display:grid;background:var(--card,#fff);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.hprow{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;padding:10px 12px;border-top:1px solid var(--line);align-items:start}
+.hprow:first-child{border-top:0}
+.hpr-cov{width:48px;height:48px;border:0;padding:0;border-radius:8px;overflow:hidden;background:none;cursor:pointer}.hpr-cov>*{width:100%!important;height:100%!important;border-radius:0!important}
+.hpr-main{min-width:0;display:grid;gap:2px}
+.hpr-t{border:0;background:none;padding:0;text-align:left;font:inherit;cursor:pointer;color:var(--ink)}.hpr-t b{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hpr-main small{color:var(--muted);font-size:12px}.hpr-main small .link{font-size:12px;font-weight:700}
+.hpr-main footer{display:flex;align-items:center;gap:8px;margin-top:4px}
+.hpr-main .dig{padding:3px 9px 3px 6px!important;font-size:12px}.hpr-main .dig svg{width:15px;height:15px}
+.hpr-main .pcom{font-size:12.5px;padding:3px 5px}
+.hpr-main .hplisten{margin-left:auto;width:30px;height:30px;border-radius:50%;border:1.5px solid #F25C05;background:none;color:#F25C05;font-weight:900;font-size:12px;cursor:pointer;display:grid;place-items:center;padding:0}
+.hpr-main .hplisten.on{background:#F25C05;color:#fff;width:auto;border-radius:99px;padding:0 10px}
+.hprow .pcoms{grid-column:1/-1}
+.potd{grid-template-columns:72px minmax(0,1fr);gap:12px;padding:12px 14px;margin:10px 0 4px;border-radius:14px}
+.potd-k{font-size:9.5px;margin-bottom:4px;gap:5px}.potd-k span{padding:2px 7px}
+.potd h2{font-size:16px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.potd-a{font-size:12.5px;margin-bottom:6px}.potd-a small{font-size:11px}
+.potd-n{display:none}
+.potd-f{gap:8px}.potd-f b{font-size:15px}.potd-f .btn.sm{padding:6px 11px;font-size:13px}.potd-f .potd-l{padding:5px 10px;font-size:12px}
+body.web .potd{grid-template-columns:150px minmax(0,1fr);gap:22px;padding:20px 24px}body.web .potd h2{font-size:26px}body.web .potd-n{display:block}
 </style>
 </head>
 <body>
@@ -1703,11 +1724,11 @@ V.home = () => {
       <div class="sechead"><h2>Kiemelt</h2><span class="muted small">hirdetés</span></div>
       <div class="hscroll">${promos.map(lcard).join('')}</div>
     </section>`:''}
-    ${potdApp()}
     ${feed.length?`<section class="sec">
       <div class="sechead"><h2>Most került fel</h2><span class="muted small">frissen a ládában</span></div>
       <div class="hscroll">${feed.slice(0,10).map(lcard).join('')}</div>
     </section>`:''}
+    ${potdApp()}
     ${recs.length?`<section class="sec">
       <div class="sechead"><h2>Neked ajánlott</h2><button class="link" data-act="editfav">Műfajok</button></div>
       <div class="hscroll">${recs.map(lcard).join('')}</div>
@@ -2541,12 +2562,18 @@ function imgSigA(url){ return new Promise(res=>{ const im=new Image(); im.crossO
 function coverMatchA(catUrl,urls){ return Promise.all([imgSigA(catUrl),...urls.map(imgSigA)]).then(sg=>{ const cat=sg[0], ph=sg.slice(1).filter(Boolean); if(!cat||!ph.length) return null;
   const m=ph.map(p=>{ let ham=0,hi=0; for(let i=0;i<64;i++){ if(cat.bits[i]!==p.bits[i]) ham++; hi+=Math.min(cat.hist[i],p.hist[i]); } return {ham,hi}; });
   if(m.some(v=>v.ham<=20||v.hi>=.6)) return true; if(m.every(v=>v.ham>=27&&v.hi<.45)) return false; return null; }).catch(()=>null); }
+/* Kezdőlap: kompakt „Most pörög” sor */
+function hpRow(p){ const r=rel(p.k); if(!r) return ''; const sl=SELLERS[p.user]||{};
+  return `<article class="hprow"><button class="hpr-cov" data-act="go" data-v="release" data-id="${r.id}" aria-label="${esc(r.a+' – '+r.t)}">${cover(r)}</button>
+    <div class="hpr-main"><button class="hpr-t" data-act="go" data-v="release" data-id="${r.id}"><b>${esc(r.a)} – ${esc(r.t)}</b></button>
+      <small><button class="link plain" data-act="go" data-v="seller" data-id="${esc(p.user)}">@${esc(uName(p.user))}</button> · ${whenTs(p.at)}</small>
+      <footer>${digA(p)}${pcomBtn(p)}<button class="hplisten" data-act="hplisten" data-id="${r.id}" aria-label="${LL('Belehallgatok','Listen')}">▶</button></footer></div>${pcomPanel(p)}</article>`; }
 /* ---------- navigáció és render ---------- */
 V.feed=vFeed; V.lists=vLists; V.list=vList; V.listedit=vListEdit;
 { const _r=V.release; V.release=p=>_r(p)+relSocial(p.id);
   const _s=V.seller; V.seller=p=>{ const fb=`<div class="folbar">${p.id==='te'?'':followBtn(p.id)}<span class="small muted"><b>${folN(p.id)}</b> ${LL('követő','followers')}</span>${p.id==='te'?`<button class="link small" data-act="go" data-v="editprofile">${LL('Profil szerkesztése','Edit profile')}</button>`:''}</div>`; return crateSection(p.id)+_s(p).replace('</div>','</div>'+fb)+sellerSocial(p.id); };
   const _c=V.coll; V.coll=p=>_c(p).replace('<div class="pad">','<div class="pad">'+pubToggleHtml());
-  const _h=V.home; V.home=p=>{ const ps=CM.posts.slice(0,3); const sec=ps.length?`<section class="sec"><div class="sechead"><h2>▶ ${LL('Most pörög','Now spinning')}</h2><span class="muted small">${LL('a lemezvadászok lemezjátszóin','on the diggers’ turntables')}</span><button class="link" data-act="go" data-v="feed">${LL('Lemezvadászok','Diggers')} ›</button></div><div class="hpgrid">${ps.map(homePostCard).join('')}</div></section>`:''; return _h(p).replace('<!--mostporog-->',sec); };
+  const _h=V.home; V.home=p=>{ const ps=CM.posts.slice(0,3); const sec=ps.length?`<section class="sec"><div class="sechead"><h2>▶ ${LL('Most pörög','Now spinning')}</h2><button class="link" data-act="go" data-v="feed">${LL('Lemezvadászok','Diggers')} ›</button></div><div class="hplist">${ps.map(hpRow).join('')}</div></section>`:''; return _h(p).replace('<!--mostporog-->',sec); };
 }
 const TABS=[['home','Kezdőlap',I.home],['search','Keresés',I.search],['sell','Eladás',I.plus],['msgs','Üzenetek',I.chat],['profile','Profil',I.user]];
 const TITLES={feed:'Lemezvadászok',lists:'Ajánló listák',list:'Ajánló lista',listedit:'Ajánló lista',editprofile:'Profilom',search:'Keresés',sell:'Lemez eladása',wish:'Kívánságlista',msgs:'Üzenetek',chat:'',scan:'Felismerés fotóról',profile:'Profil',cart:'Kosár',release:'Katalóguslap',listing:'Hirdetés',done:'Rendelés',notifs:'Értesítések',coll:'Gyűjteményem',seller:'Eladó',bulk:'Tömeges feltöltés',plans:'Eladói csomagok'};
