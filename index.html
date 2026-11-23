@@ -777,6 +777,25 @@ body.web #genrebar::-webkit-scrollbar-thumb,body.web .chips::-webkit-scrollbar-t
 .crcinfo{display:flex;align-items:center;gap:10px;margin-top:10px;background:#1f1a17;border:1px solid #ffffff1a;border-radius:14px;padding:10px 10px 10px 14px}
 .crcinfo>span{flex:1;min-width:0}.crcinfo b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
 .crplay{flex:none;padding:9px 14px;font-size:13px;width:auto;background:#F25C05!important;color:#fff!important}
+.fts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:6px 0 4px}
+.ft{display:flex;align-items:center;gap:9px;padding:12px 13px;border-radius:14px;background:var(--card,#fff);border:1px solid var(--line);font-weight:700;font-size:15px;text-align:left;color:var(--ink);box-shadow:0 6px 18px #00000012;cursor:pointer}
+.ft svg{width:20px;height:20px;flex:none;color:#F25C05}
+.ft b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ft small{margin-left:auto;font-size:12px;color:var(--muted,#6b6b73);font-weight:700}
+.ft.on{background:#F25C05;border-color:#F25C05;color:#fff}.ft.on svg,.ft.on small{color:#fff}
+body.web .fts{grid-template-columns:repeat(7,minmax(0,1fr))}
+.hpgrid{display:grid;gap:12px}
+body.web .hpgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hpost{background:var(--card,#fff);border:1px solid var(--line);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.hpost header{display:flex;align-items:center;gap:10px}
+.hpost header b{font-size:14px}.hpost header small{display:block;color:var(--muted,#6b6b73);font-size:12px}
+.hpalb{display:grid;grid-template-columns:60px 1fr;gap:12px;align-items:center;background:#00000008;border:0;border-radius:14px;padding:8px;text-align:left;color:var(--ink);cursor:pointer;font:inherit}
+.hpcov{width:60px;height:60px;border-radius:8px;overflow:hidden;display:block}.hpcov>*{width:100%!important;height:100%!important;border-radius:0!important}
+.hpalb b{display:block;font-size:14px;line-height:1.3}.hpalb small{color:var(--muted,#6b6b73);font-size:12.5px}
+.hpost p{font-size:14.5px;line-height:1.5;margin:0}
+.hpost footer{display:flex;gap:16px;align-items:center;font-size:13px;font-weight:700;color:var(--muted,#6b6b73);margin-top:auto}
+.hpost footer button{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--muted,#6b6b73);cursor:pointer}
+.hpost .plike.on{color:#e0245e}.hpost .hplisten{margin-left:auto;color:#F25C05!important}.hpost .hplisten.on{color:var(--ink)!important}
 </style>
 </head>
 <body>
@@ -1607,17 +1626,22 @@ V.home = () => {
       <div class="sechead"><h2>A kívánságlistádról elérhető</h2><button class="link" data-act="go" data-v="wish">Mind</button></div>
       <div class="hscroll">${wishAvail.map(lcard).join('')}</div>
     </section>`:''}
-    <div class="fmtsticky">${fmtChips(HOME_FORMATS)}</div>
+    ${fmtTilesApp()}
     ${PROMO_ON&&promos.length?`<section class="sec">
       <div class="sechead"><h2>Kiemelt</h2><span class="muted small">hirdetés</span></div>
       <div class="hscroll">${promos.map(lcard).join('')}</div>
+    </section>`:''}
+    ${feed.length?`<section class="sec">
+      <div class="sechead"><h2>Most került fel</h2><span class="muted small">frissen a ládában</span></div>
+      <div class="hscroll">${feed.slice(0,10).map(lcard).join('')}</div>
     </section>`:''}
     ${recs.length?`<section class="sec">
       <div class="sechead"><h2>Neked ajánlott</h2><button class="link" data-act="editfav">Műfajok</button></div>
       <div class="hscroll">${recs.map(lcard).join('')}</div>
     </section>`:`<button class="card homecta" data-act="editfav"><span><b>Kapj személyre szabott ajánlatokat</b><br><span class="small muted">Válaszd ki, milyen zenét hallgatsz</span></span><span class="muted">›</span></button>`}
+    <!--mostporog-->
     <section class="sec">
-      <div class="sechead"><h2>Friss hirdetések</h2><span class="muted small">${feed.length} db</span></div>
+      <div class="sechead"><h2>Összes friss hirdetés</h2><span class="muted small">${feed.length} db</span></div>
       ${feed.length?`<div class="grid">${feed.map(lcard).join('')}</div>`:'<div class="empty">Ebben a formátumban most nincs hirdetés.</div>'}
     </section>
   </div>`;
@@ -2324,12 +2348,33 @@ function mountCrate(){
   box.addEventListener('pointerup',e=>{const was=moved;sx=null;if(was)return;const el=document.elementFromPoint(e.clientX,e.clientY),c=el&&el.closest('.crc');if(!c)return;const k=+c.dataset.k;if(k===ci)play();else{ci=k;lay()}});
   box.addEventListener('pointercancel',()=>{sx=null});
 }
+
+/* Kezdőlap: formátum-csempék és „Most pörög” kártyák – ugyanaz, mint a webes lemezbörzén */
+function fmtTilesApp(){
+  const n=f=>active().filter(x=>f==='Mind'||x.fmt===f).length;
+  return `<nav class="fts" aria-label="${LL('Formátumok','Formats')}">${['Mind',...HOME_FORMATS].map(f=>`<button class="ft${S.fmt===f?' on':''}" data-act="fmt" data-f="${f}">${f==='Mind'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>':fmtIcon(f)}<b>${f==='Mind'?LL('Összes','All'):f}</b><small>${n(f)}</small></button>`).join('')}</nav>`;
+}
+function homePostCard(p){ const r=rel(p.k); if(!r) return ''; const n=offersFor(p.k).length, m=minPrice(p.k), sl=SELLERS[p.user]||{}, dn=CM.disc.filter(d=>d.k===p.k).length;
+  return `<article class="hpost"><header>${uAv(p.user,38)}<span><button class="link plain" data-act="go" data-v="seller" data-id="${esc(p.user)}"><b>@${esc(uName(p.user))}</b></button><small>${[p.user==='te'?(S.me&&S.me.city):sl.city,whenTs(p.at)].filter(Boolean).join(' · ')}</small></span></header>
+    <button class="hpalb" data-act="go" data-v="release" data-id="${r.id}"><span class="hpcov">${cover(r)}</span><span><b>${esc(r.a)} – ${esc(r.t)}</b><small>${n?LL(n+' eladó példány · ettől '+ft(m),n+' for sale · from '+ft(m)):LL('Most nincs eladó példány','None for sale right now')}</small></span></button>
+    ${tx(p.text)?`<p data-notr>${esc(tx(p.text))}</p>`:''}
+    <footer><button class="plike${p.liked?' on':''}" data-act="plike" data-id="${p.id}">${p.liked?'♥':'♡'} ${p.likes}</button><button class="link plain" data-act="go" data-v="release" data-id="${r.id}">💬 ${dn}</button><button class="hplisten" data-act="hplisten" data-id="${r.id}">▶ ${LL('Belehallgatok','Listen')}</button></footer></article>`; }
+let HPA=null, HPB=null;
+function hpListen(btn,r){
+  if(!HPA){ HPA=new Audio(); HPA.addEventListener('ended',()=>{ if(HPB){ HPB.classList.remove('on'); HPB.textContent='▶ '+LL('Belehallgatok','Listen'); } }); }
+  CRTS.forEach(c=>{ if(c.armDown){ c.lift(); c.armTo(0); } });
+  if(HPB===btn && !HPA.paused){ HPA.pause(); btn.classList.remove('on'); btn.textContent='▶ '+LL('Belehallgatok','Listen'); return; }
+  if(HPB && HPB!==btn){ HPB.classList.remove('on'); HPB.textContent='▶ '+LL('Belehallgatok','Listen'); }
+  HPB=btn; btn.classList.add('on'); btn.textContent='… '+LL('Betöltés','Loading');
+  crSample(r).then(smp=>{ if(HPB!==btn) return; if(!smp){ btn.classList.remove('on'); btn.textContent=LL('Nincs előzetes','No preview'); return; }
+    HPA.src=smp.src; HPA.play().then(()=>{ btn.textContent='❚❚ '+LL('Szól – 30 mp','Playing – 30 s'); }).catch(()=>{ btn.classList.remove('on'); btn.textContent='▶ '+LL('Belehallgatok','Listen'); }); });
+}
 /* ---------- navigáció és render ---------- */
 V.feed=vFeed; V.lists=vLists; V.list=vList; V.listedit=vListEdit;
 { const _r=V.release; V.release=p=>_r(p)+relSocial(p.id);
   const _s=V.seller; V.seller=p=>{ const fb=`<div class="folbar">${p.id==='te'?'':followBtn(p.id)}<span class="small muted"><b>${folN(p.id)}</b> ${LL('követő','followers')}</span>${p.id==='te'?`<button class="link small" data-act="go" data-v="editprofile">${LL('Profil szerkesztése','Edit profile')}</button>`:''}</div>`; return crateSection(p.id)+_s(p).replace('</div>','</div>'+fb)+sellerSocial(p.id); };
   const _c=V.coll; V.coll=p=>_c(p).replace('<div class="pad">','<div class="pad">'+pubToggleHtml());
-  const _h=V.home; V.home=p=>{ const ps=CM.posts.slice(0,2); const sec=`<section class="sec"><div class="sechead"><h2>▶ ${LL('Most pörög','Now spinning')}</h2><button class="link" data-act="go" data-v="feed">${LL('Közösség','Community')} ›</button></div>${ps.map(postCard).join('')}<button class="card composecta" data-act="go" data-v="feed"><span><b>${LL('Közösség','Community')}</b><br><span class="small muted">${LL('Kövesd a gyűjtőket, nézd meg, mi pörög náluk, és böngészd az ajánló listákat.','Follow collectors, see what’s spinning and browse recommended lists.')}</span></span><span class="muted">›</span></button></section>`; const h=_h(p), i=h.lastIndexOf('</div>'); return h.slice(0,i)+sec+h.slice(i); };
+  const _h=V.home; V.home=p=>{ const ps=CM.posts.slice(0,3); const sec=ps.length?`<section class="sec"><div class="sechead"><h2>▶ ${LL('Most pörög','Now spinning')}</h2><span class="muted small">${LL('a közösség lemezjátszóin','on the community’s turntables')}</span><button class="link" data-act="go" data-v="feed">${LL('Közösség','Community')} ›</button></div><div class="hpgrid">${ps.map(homePostCard).join('')}</div></section>`:''; return _h(p).replace('<!--mostporog-->',sec); };
 }
 const TABS=[['home','Kezdőlap',I.home],['search','Keresés',I.search],['sell','Eladás',I.plus],['msgs','Üzenetek',I.chat],['profile','Profil',I.user]];
 const TITLES={feed:'Közösség',lists:'Ajánló listák',list:'Ajánló lista',listedit:'Ajánló lista',editprofile:'Profilom',search:'Keresés',sell:'Lemez eladása',wish:'Kívánságlista',msgs:'Üzenetek',chat:'',scan:'Felismerés fotóról',profile:'Profil',cart:'Kosár',release:'Katalóguslap',listing:'Hirdetés',done:'Rendelés',notifs:'Értesítések',coll:'Gyűjteményem',seller:'Eladó',bulk:'Tömeges feltöltés',plans:'Eladói csomagok'};
@@ -2539,6 +2584,7 @@ document.addEventListener('click', e=>{
   switch(a){
     case 'go': if(d.v==='cart'||S.view!==d.v||d.id!==S.params.id) go(d.v,{id:d.id}); break;
     case 'back': back(); break;
+    case 'hplisten': { const r=rel(d.id); if(r) hpListen(el,r); break; }
     case 'tab': if(WX&&!S.me&&(d.v==='sell'||d.v==='profile')){ openAuth('welcome'); break; } tab(d.v); break;
     case 'fmt': S.fmt=d.f; S.vt='Mind'; if(!['search','home'].includes(S.view)){S.stab='list';S.stack=[];S.view='search';S.params={};render(true);} else render(); break;
     case 'vt': S.vt=d.v; render(); break;
