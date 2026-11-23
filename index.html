@@ -813,14 +813,6 @@ body.web .fts{grid-template-columns:repeat(8,minmax(0,1fr))}
 .sealck input{width:20px;height:20px;margin:1px 0 0;accent-color:#F25C05;flex:none}
 .sealck b{display:block;font-size:14.5px}.sealck small{display:block;color:var(--muted,#6b6b73);font-size:12.5px;line-height:1.45;margin-top:2px}
 .sealck.on{border-color:#F25C05;background:#fff6ef}
-.calcbox{display:grid;gap:10px;background:#121214;color:#f6f3ec;border:0;padding:18px 16px}
-.calcbox .calck{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#ff8c1a}.calcbox .calct{font-size:18px;line-height:1.25;color:#fff}
-.calcf{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:baseline}.calcf label{font-weight:700;font-size:14px}.calcf output{font-weight:800;color:#ff8c1a}
-.calcf input{grid-column:1/-1;width:100%;accent-color:#F25C05;height:28px}
-.calcout{background:#ffffff0f;border:1px solid #ffffff1f;border-radius:14px;padding:6px 12px}
-.calcout .crow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff14;font-size:14px}.calcout .crow span{color:#c9c4b9}.calcout .crow b{color:#fff}
-.calcout .crow.tot{border-bottom:0}.calcout .crow.tot span{color:#fff;font-weight:700}.calcout .crow.tot b{color:#ff8c1a;font-size:18px}
-.calcbox .muted{color:#a8a399!important}
 </style>
 </head>
 <body>
@@ -2105,7 +2097,6 @@ function planCard(p){ const m=freeM(p.k);
 V.plans = () => `<div class="pad">
   ${LAUNCH.on?`<div class="card launchcard"><b class="lk">Induló akció</b><b class="lt">Az első hónap ingyen</b><span>Minden fizetős csomag ${LAUNCH.months} hónapig ingyenes a regisztráció napjától.</span></div>`:''}
   <p class="muted small" style="margin:0">Az árak javasolt demó árak, a prototípusban nincs valódi terhelés.</p>${LANG==='en'?'<p class="muted small" style="margin:0" data-notr>Payments are made in Hungarian forints (HUF). Euro amounts are approximate (€1 ≈ HUF '+EUR_RATE+').</p>':''}
-  ${calcHtml()}
   ${PLANS.filter(p=>p.k!=='plus').map(planCard).join('')}
   <details class="card plusbox"${S.myTier==='plus'?' open':''}><summary><span>${tierBadge('plus')} <b>Nagykereskedőknek</b></span><span class="muted small">${ft(PLANS.find(p=>p.k==='plus').p)} / hó ›</span></summary>${planCard(PLANS.find(p=>p.k==='plus'))}</details>
 </div>`;
@@ -2404,17 +2395,6 @@ function hpListen(btn,r){
     HPA.src=smp.src; HPA.play().then(()=>{ btn.textContent='❚❚ '+LL('Szól – 30 mp','Playing – 30 s'); }).catch(()=>{ btn.classList.remove('on'); btn.textContent='▶ '+LL('Belehallgatok','Listen'); }); });
 }
 
-/* Költségkalkulátor – ugyanaz, mint a weboldal Árak rovatában */
-function calcHtml(){ const c=S.calc||(S.calc={n:10,p:5000,a:40}); const turn=c.n*c.p;
-  const pl=PLANS.find(q=>c.n<=q.sold&&turn<=q.turn&&c.a<=q.active);
-  const row=(a,b,cls='')=>`<div class="crow${cls}"><span>${a}</span><b>${b}</b></div>`;
-  return `<div class="card calcbox"><b class="calck">${LL('Kalkulátor','Calculator')}</b><b class="calct">${LL('Számold ki, mennyibe kerül neked az eladás','Work out what selling costs you')}</b>
-    <div class="calcf"><label for="cl-n">${LL('Havonta ennyi lemezt adok el','Records I sell per month')}</label><output>${c.n} ${LL('lemez','records')}</output><input type="range" id="cl-n" data-calc="n" min="1" max="500" step="1" value="${c.n}"></div>
-    <div class="calcf"><label for="cl-p">${LL('Átlagos eladási ár','Average selling price')}</label><output>${ft(c.p)}</output><input type="range" id="cl-p" data-calc="p" min="500" max="50000" step="500" value="${c.p}"></div>
-    <div class="calcf"><label for="cl-a">${LL('Egyszerre ennyi aktív hirdetésem van','Active listings at a time')}</label><output>${c.a} ${LL('hirdetés','listings')}</output><input type="range" id="cl-a" data-calc="a" min="1" max="3000" step="1" value="${c.a}"></div>
-    <div class="calcout">${row(LL('Havi forgalmad','Your monthly sales'),ft(turn))}${row(LL('Neked elég csomag','Plan that fits you'),pl?pl.n:LL('Egyedi ajánlat','Custom offer'))}${row(LL('Havidíj','Monthly fee'),pl?(pl.p?ft(pl.p)+LL(' / hó',' / month'):LL('ingyenes','free')):'–')}${row(LL('Jutalék az eladások után','Commission on sales'),ft(0))}${row(LL('Egy eladott lemezre jutó költség','Cost per record sold'),pl?ft(pl.p/c.n):'–')}${row(LL('Ennyi marad neked havonta','What you keep each month'),pl?ft(turn-pl.p):'–',' tot')}</div>
-    <p class="small muted" style="margin:0">${!pl?LL('Ez a legnagyobb csomagunknál is több – írj nekünk, és egyedi ajánlatot adunk. ','This is beyond our largest plan – write to us for an offer. '):(pl.p&&LAUNCH.on?LL('Induló akció: az első '+LAUNCH.months+' hónap ingyenes – addig neked marad a teljes '+ft(turn)+'. ','Launch offer: the first '+LAUNCH.months+' month(s) free – you keep the full '+ft(turn)+'. '):'')}${LL('A vevővédelmi díjat (egy '+ft(c.p)+'-os lemeznél '+ft(PROTECT(c.p))+') és a szállítást a vevő fizeti – ez nem csökkenti a bevételed.','The buyer pays the buyer protection fee ('+ft(PROTECT(c.p))+' on a '+ft(c.p)+' record) and shipping – it doesn’t reduce your income.')}</p></div>`; }
-document.addEventListener('input',e=>{ const t=e.target; if(!t.dataset||!t.dataset.calc) return; S.calc=S.calc||{n:10,p:5000,a:40}; S.calc[t.dataset.calc]=+t.value; const box=t.closest('.calcbox'); if(!box) return; const id=t.id; const tmp=document.createElement('div'); tmp.innerHTML=calcHtml(); box.replaceWith(tmp.firstElementChild); const n=document.getElementById(id); if(n) n.focus(); });
 /* ---------- navigáció és render ---------- */
 V.feed=vFeed; V.lists=vLists; V.list=vList; V.listedit=vListEdit;
 { const _r=V.release; V.release=p=>_r(p)+relSocial(p.id);
