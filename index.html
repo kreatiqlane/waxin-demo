@@ -753,27 +753,30 @@ body.web #genrebar::-webkit-scrollbar-thumb,body.web .chips::-webkit-scrollbar-t
 .leitem>span{display:grid;gap:6px;min-width:0}
 .lebtn{display:flex;gap:4px}.lebtn button{border:1px solid var(--line);background:var(--surface);border-radius:8px;width:30px;height:30px;cursor:pointer;font:inherit}
 .pubsw{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px}
-.crsec{margin:0 0 18px;padding:18px 16px 14px;border-radius:20px;background:radial-gradient(420px 260px at 50% 22%,#43210d 0,transparent 70%),#14100e;color:#f4ede5;overflow:hidden}
-.crtop{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
-.crbox{min-width:0}
-.crsec .muted{color:#a3988d}
-.crsec a,.crsec .link{color:#F25C05}
-.crtt-wrap{max-width:240px;margin:0 auto;width:100%;text-align:center}
-.crtt{width:100%;max-width:260px;margin:0 auto;user-select:none;-webkit-user-select:none}
-.crtt svg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 16px 28px #00000040)}
+.crsec{margin:0 0 18px;padding:18px 14px 16px;border-radius:20px;background:radial-gradient(420px 300px at 50% 60%,#43210d 0,transparent 70%),#14100e;color:#f4ede5;overflow:hidden}
+.crsec .muted{color:#a3988d}.crsec a,.crsec .link{color:#F25C05}
+.crtt-wrap{max-width:230px;margin:0 auto;width:100%}
+.crtt{width:100%;user-select:none;-webkit-user-select:none}
+.crtt svg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 16px 28px #00000060)}
 .crtt .recw{transform-box:fill-box;transform-origin:center;transition:transform .45s cubic-bezier(.5,0,.5,1),opacity .4s}
 .crtt.swap .recw{transform:translateY(-28%) scale(.62);opacity:0}
 .crtt .rec,.crtt .arm,.crtt .vol,.crtt .pitch{cursor:grab;touch-action:none}
 .crtt .ttbtn,.crtt .spdb,.crtt .cue{cursor:pointer}
-.crsub{font-size:13px;margin-top:12px;line-height:1.45;text-align:left;padding:10px 12px;border-radius:12px;background:#ffffff0d;border:1px solid #ffffff1a;min-height:56px}
-.crhead{display:flex;gap:8px;align-items:baseline;margin-bottom:8px;flex-wrap:wrap}
-.crrow{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:thin}
-.crcard{flex:none;width:112px;text-align:left;scroll-snap-align:start;transition:transform .2s;border:0;background:none;padding:0;color:inherit;font:inherit;cursor:pointer}
-.crcard.on .crcov{outline:3px solid #F25C05;outline-offset:3px}
-.crcard:hover{transform:translateY(-3px)}
-.crcov{display:block;width:112px;height:112px;border-radius:10px;overflow:hidden;box-shadow:0 8px 18px #0008;background:#2a2421}
-.crcov>*{width:100%;height:100%;display:block}
-.crcard>span:last-child{display:block;font-size:12px;font-weight:600;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:112px}
+.crsub{font-size:13px;margin-top:12px;line-height:1.45;padding:10px 12px;border-radius:12px;background:#ffffff0d;border:1px solid #ffffff1a;min-height:56px}
+.crhead{margin-top:18px;display:grid;gap:2px}
+.crhead b{font-size:19px;letter-spacing:-.01em}
+.crkick{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#F25C05}
+.crbox3d{position:relative;height:210px;perspective:900px;margin:4px -14px 0;cursor:grab;outline:none;touch-action:pan-y;user-select:none;-webkit-user-select:none;overflow:hidden}
+.crc{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-80px 0 0 -75px;border-radius:9px;overflow:hidden;background:#2a2421;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .4s,box-shadow .3s;box-shadow:0 18px 34px #000b}
+.crc img,.crc>*{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.crc.front{box-shadow:0 0 0 3px #F25C05,0 22px 44px #000d}
+.crctl{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:2px}
+.crb{width:38px;height:38px;border-radius:50%;border:1px solid #ffffff2a;background:none;color:#f4ede5;font-size:20px;line-height:1;cursor:pointer}
+.crb:active{background:#F25C05;border-color:#F25C05}
+#crN{font-weight:700;font-size:13px;color:#a3988d;min-width:56px;text-align:center}
+.crcinfo{display:flex;align-items:center;gap:10px;margin-top:10px;background:#1f1a17;border:1px solid #ffffff1a;border-radius:14px;padding:10px 10px 10px 14px}
+.crcinfo>span{flex:1;min-width:0}.crcinfo b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
+.crplay{flex:none;padding:9px 14px;font-size:13px;width:auto;background:#F25C05!important;color:#fff!important}
 </style>
 </head>
 <body>
@@ -2278,6 +2281,7 @@ class CrTT{
 }
 function initCrate(){
   document.querySelectorAll('[data-crate-tt]').forEach(el=>{ if(!el._cr){ el._cr=new CrTT(el); CRTS.push(el._cr) } });
+  mountCrate();
 }
 function crLoop(t){
   const dt=Math.min(.05,(t-crLast)/1000)||.016; crLast=t;
@@ -2285,22 +2289,41 @@ function crLoop(t){
   requestAnimationFrame(crLoop);
 }
 requestAnimationFrame(crLoop);
+function crImg(x){ const src=(x.photos&&x.photos[0])||''; return (cover(rel(x.rel),{photo:src}).match(/<img[^>]*src="([^"]+)"/)||[])[1]||src; }
 function crateSection(id){
   const xs=active().filter(x=>x.seller===id);
   if(!xs.length) return '';
-  const who=id==='te'?'Te':'@'+esc(id);
-  return `<section class="crsec">
-    <div class="crtop">
-      <div class="crtt-wrap"><div class="crtt" data-crate-tt></div>
-        <div class="crsub" id="crInfo">Válassz egy lemezt a ládából, és tedd a kart a lemezre. 30 másodperces előzetes szól.</div></div>
-      <div class="crbox">
-        <div class="crhead"><b>Ládaturkáló</b> <span class="small muted">${who} · ${xs.length} lemez</span></div>
-        <div class="crrow">${xs.map(x=>{const r=rel(x.rel);return `<button class="crcard" data-act="crpick" data-id="${x.id}" aria-label="${esc(r.a)} – ${esc(r.t)}"><span class="crcov">${cover(r)}</span><span>${esc(r.a)}</span></button>`}).join('')}</div>
-        <p class="small muted" style="margin:6px 0 0">Húzd a lemezt, vagy fogd meg a kart. Az előzetesek 30 másodpercesek.</p>
-      </div>
-    </div></section>`;
+  const who=id==='te'?'a saját':'@'+esc(id);
+  return `<section class="crsec" data-seller="${esc(id)}">
+    <div class="crtt-wrap"><div class="crtt" data-crate-tt></div>
+      <div class="crsub" id="crInfo"><b>Lapozd át a ládát</b><br><span class="small">Kattints a középső lemezre, vagy nyomd meg a „Lejátszóra” gombot: a kar a lemezre áll, és szól a 30 mp-es Apple Music-előzetes.</span></div></div>
+    <div class="crhead"><span class="crkick">Ládaturkálás</span><b>Lapozd át ${who} ládáját</b><span class="small muted">húzd · görgesd · koppints a középsőre</span></div>
+    <div class="crbox3d" id="crBox" tabindex="0" aria-label="Lemezláda">${xs.map((x,k)=>{const r=rel(x.rel),im=crImg(x);return `<div class="crc" data-k="${k}" data-id="${x.id}">${im?`<img src="${esc(im)}" alt="${esc(r.a)} – ${esc(r.t)}" draggable="false">`:cover(r)}</div>`}).join('')}</div>
+    <div class="crctl"><button class="crb" data-crs="-1" aria-label="Előző">‹</button><span id="crN"></span><button class="crb" data-crs="1" aria-label="Következő">›</button></div>
+    <div class="crcinfo" id="crCinfo"></div>
+  </section>`;
 }
-
+function mountCrate(){
+  const sec=document.querySelector('.crsec'); if(!sec||sec._m) return; sec._m=true;
+  const xs=active().filter(x=>x.seller===sec.dataset.seller), box=sec.querySelector('#crBox'), cards=[...box.querySelectorAll('.crc')], n=xs.length;
+  const tt=sec.querySelector('[data-crate-tt]')._cr; let ci=0;
+  const lay=()=>{ const k=(cards[0]?cards[0].offsetWidth:216)/216;
+    cards.forEach(c=>{const d=+c.dataset.k-ci,a=Math.abs(d),sg=Math.sign(d);c.style.transform=d?`translateX(${sg*(118+a*62)*k}px) translateZ(${(-140-a*36)*k}px) rotateY(${-sg*58}deg)`:`translateZ(${30*k}px)`;c.style.zIndex=100-a;c.style.opacity=a>5?0:1;c.classList.toggle('front',!d)});
+    sec.querySelector('#crN').textContent=`${ci+1} / ${n}`; const x=xs[ci],r=rel(x.rel);
+    sec.querySelector('#crCinfo').innerHTML=`<span><b>${esc(r.a)} – ${esc(r.t)}</b><br><span class="small muted">${ft(x.price)} · <a href="#" data-act="go" data-v="listing" data-id="${x.id}">Hirdetés</a></span></span><button class="btn crplay" data-crplay>▶ Lejátszóra</button>`; };
+  const step=d=>{const k=Math.max(0,Math.min(n-1,ci+d)); if(k!==ci){ci=k;lay()}};
+  const play=()=>tt&&tt.load(xs[ci]);
+  lay();
+  sec.querySelectorAll('[data-crs]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();step(+b.dataset.crs)}));
+  sec.querySelector('#crCinfo').addEventListener('click',e=>{if(e.target.closest('[data-crplay]')){e.stopPropagation();play()}});
+  box.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();step(1)}else if(e.key==='ArrowLeft'){e.preventDefault();step(-1)}else if(e.key==='Enter'){e.preventDefault();play()}});
+  let lt=0,sx=null,moved=false;
+  box.addEventListener('wheel',e=>{const h=Math.abs(e.deltaX)>Math.abs(e.deltaY); if(!h&&!e.shiftKey) return; e.preventDefault(); const now=Date.now(); if(now-lt<120) return; lt=now; step((h?e.deltaX:e.deltaY)>0?1:-1)},{passive:false});
+  box.addEventListener('pointerdown',e=>{sx=e.clientX;moved=false;try{box.setPointerCapture(e.pointerId)}catch(_){}});
+  box.addEventListener('pointermove',e=>{if(sx===null)return;const d=e.clientX-sx;if(Math.abs(d)>40){step(d<0?1:-1);sx=e.clientX;moved=true}});
+  box.addEventListener('pointerup',e=>{const was=moved;sx=null;if(was)return;const el=document.elementFromPoint(e.clientX,e.clientY),c=el&&el.closest('.crc');if(!c)return;const k=+c.dataset.k;if(k===ci)play();else{ci=k;lay()}});
+  box.addEventListener('pointercancel',()=>{sx=null});
+}
 /* ---------- navigáció és render ---------- */
 V.feed=vFeed; V.lists=vLists; V.list=vList; V.listedit=vListEdit;
 { const _r=V.release; V.release=p=>_r(p)+relSocial(p.id);
@@ -2516,7 +2539,6 @@ document.addEventListener('click', e=>{
   switch(a){
     case 'go': if(d.v==='cart'||S.view!==d.v||d.id!==S.params.id) go(d.v,{id:d.id}); break;
     case 'back': back(); break;
-    case 'crpick': { const el=document.querySelector('[data-crate-tt]'); const x=active().find(q=>String(q.id)===String(d.id)); if(el&&el._cr&&x){ document.querySelectorAll('.crcard.on').forEach(o=>o.classList.remove('on')); const el2=document.querySelector('.crcard[data-id="'+d.id+'"]'); el2&&el2.classList.add('on'); el._cr.load(x); } return; }
     case 'tab': if(WX&&!S.me&&(d.v==='sell'||d.v==='profile')){ openAuth('welcome'); break; } tab(d.v); break;
     case 'fmt': S.fmt=d.f; S.vt='Mind'; if(!['search','home'].includes(S.view)){S.stab='list';S.stack=[];S.view='search';S.params={};render(true);} else render(); break;
     case 'vt': S.vt=d.v; render(); break;
