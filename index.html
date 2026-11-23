@@ -796,11 +796,12 @@ body.web .hpgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .hpost footer{display:flex;gap:16px;align-items:center;font-size:13px;font-weight:700;color:var(--muted,#6b6b73);margin-top:auto}
 .hpost footer button{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--muted,#6b6b73);cursor:pointer}
 .hpost .plike.on{color:#e0245e}.hpost .hplisten{margin-left:auto;color:#F25C05!important}.hpost .hplisten.on{color:var(--ink)!important}
-.gchip .gdisc{display:grid;place-items:center;background:repeating-radial-gradient(circle,#111 0 1px,#1d1f24 1px 2px)!important}
-.gchip .gdisc i{width:14px;height:14px;border-radius:50%;background:var(--gc);display:grid;place-items:center}
-.gchip .gdisc svg{width:9px;height:9px;display:block}
-@media (hover:hover){.gchip:hover .gdisc{animation:gspin 1.8s linear infinite}}
-@keyframes gspin{to{transform:rotate(360deg)}}
+.gchip .gdisc{display:grid;place-items:center;width:28px!important;height:28px!important;background:repeating-radial-gradient(circle,#111 0 1px,#1d1f24 1px 2px)!important}
+.gchip .gdisc i{width:18px;height:18px;border-radius:50%;overflow:hidden;display:block;background:var(--gc)}
+.gchip .gdisc img{width:100%;height:100%;object-fit:cover;display:block}
+.gchip .gdisc svg{width:100%;height:100%;display:block}
+@media (hover:hover){.gchip:hover .gdisc{animation:gspin .85s linear infinite}}
+@keyframes gspin{from{transform:scale(1.2) rotate(0)}to{transform:scale(1.2) rotate(360deg)}}
 .ftmore{position:relative}
 .ftmore summary{list-style:none;height:100%;box-sizing:border-box}.ftmore summary::-webkit-details-marker{display:none}
 .ftmore[open] summary small{transform:rotate(180deg)}
@@ -1662,12 +1663,11 @@ V.home = () => {
   </div>`;
 };
 
-const GICON={"Hip-Hop": "<rect x='9' y='2.5' width='6' height='11' rx='3'/><path d='M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7'/>", "Electronic": "<path d='M2 12h3l2-6 3 12 3-9 2 5 2-2h5'/>", "House": "<path d='M3 11.5 12 4l9 7.5'/><path d='M5.5 9.5V20h13V9.5'/><path d='M10 20v-5.5h4V20'/>", "Techno": "<path d='M4 20V11M9 20V5M14 20V13M19 20V8'/>", "Disco / Funk": "<circle cx='12' cy='13' r='7.5'/><path d='M12 2v3.5M4.5 13h15M5.8 9h12.4M5.8 17h12.4M12 5.5c-2.6 2.4-2.6 12.6 0 15M12 5.5c2.6 2.4 2.6 12.6 0 15'/>", "Drum & Bass": "<ellipse cx='12' cy='8' rx='8' ry='3'/><path d='M4 8v8c0 1.7 3.6 3 8 3s8-1.3 8-3V8'/><path d='M7 3l4 4M17 3l-4 4'/>", "Electro": "<path d='M13 2 4.5 13.5H11L10 22l8.5-11.5H12z'/>", "Trance": "<path d='M12 12a2 2 0 1 1 2-2 4 4 0 1 1-4-4 6 6 0 1 1-6 6 8 8 0 1 1 8 8'/>", "Jazz": "<path d='M15 3h4M17 3v5c0 2-1 3-2.5 4.5L8 19a3 3 0 0 1-4.5-4L7 11'/><circle cx='12' cy='11' r='.6'/><circle cx='10' cy='13' r='.6'/><circle cx='8' cy='15' r='.6'/>", "Soul / R&B": "<path d='M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z'/>", "Reggae / Dub": "<rect x='5' y='2.5' width='14' height='19' rx='2'/><circle cx='12' cy='14.5' r='4'/><circle cx='12' cy='14.5' r='1'/><circle cx='12' cy='6.5' r='1.5'/>", "Rock": "<path d='M14 10 20 4M18.5 2.5l3 3'/><path d='M14.5 9.5c-1.6-1.6-4.6-1.4-5.8.6-.6 1-1.3 1.4-2.6 1.5-2.3.2-3.3 3.4-1.2 5.5l1.8 1.8c2.1 2.1 5.3 1.1 5.5-1.2.1-1.3.5-2 1.5-2.6 2-1.2 2.2-4.2.6-5.8z'/><circle cx='10' cy='14' r='1.6'/>", "Indie / Alt": "<path d='M4 15v-3a8 8 0 0 1 16 0v3'/><rect x='3' y='14' width='4.5' height='6.5' rx='1.5'/><rect x='16.5' y='14' width='4.5' height='6.5' rx='1.5'/>", "Punk / Hardcore": "<path d='M12 2.5l2.2 5.6 6-.6-4.6 3.9 3 5.3-5.6-2.3L12 21l-1-6.6-5.6 2.3 3-5.3L3.8 7.5l6 .6z'/>", "Metal": "<path d='M8 21v-3.5C5.5 16 4 13.5 4 10.5a8 8 0 0 1 16 0c0 3-1.5 5.5-4 7V21z'/><circle cx='9' cy='11' r='1.7'/><circle cx='15' cy='11' r='1.7'/><path d='M10.5 21v-2M13.5 21v-2'/>", "Blues": "<rect x='2.5' y='8' width='19' height='8' rx='2'/><path d='M6 11h1M9 11h1M12 11h1M15 11h1M18 11h1M6 13.5h12'/>", "Folk / Country": "<path d='M3 15.5c3 1.5 15 1.5 18 0'/><path d='M6 15.8C6 9 7.5 6 9.5 6c1 0 1.5 1 2.5 1s1.5-1 2.5-1c2 0 3.5 3 3.5 9.8'/>", "Latin": "<ellipse cx='8' cy='8' rx='4' ry='5'/><path d='M9.5 12.7 12 21'/><ellipse cx='16.5' cy='9' rx='3.5' ry='4.5'/><path d='M15.5 13.3 14 21'/>", "World": "<circle cx='12' cy='12' r='9'/><path d='M3 12h18M12 3c2.5 2.5 3.6 5.6 3.6 9s-1.1 6.5-3.6 9c-2.5-2.5-3.6-5.6-3.6-9S9.5 5.5 12 3z'/>", "Pop": "<path d='M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6L12 16.7 6.6 19.6l1.1-6-4.5-4.2 6.1-.8z'/>", "Klasszikus": "<path d='M9 18V5l11-2v13'/><circle cx='6.5' cy='18' r='2.5'/><circle cx='17.5' cy='16' r='2.5'/>", "Filmzene": "<rect x='3' y='9' width='18' height='12' rx='1.5'/><path d='M3 9l1.5-5 16.5 3-1 2M8 4.6 9.5 8.6M13.5 5.6 15 9.4'/>", "Egyéb": "<path d='M10 18V4l8 3'/><circle cx='7.5' cy='18' r='2.5'/>", "DJ / Gyűjtői": "<circle cx='10' cy='13' r='7'/><circle cx='10' cy='13' r='2'/><path d='M19 3v9l-3.5 3.5'/>"};
-const gIconApp=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${GICON[n]||GICON['Egyéb']}</svg>`;
+const gPicApp=n=>{ const x=active().find(q=>q.photos&&q.photos[0]&&mainGenre(rel(q.rel))===n); return x?`<img src="${esc(x.photos[0])}" alt="" loading="lazy">`:''; };
 function genreBar(){
   const on = g => S.view==='search' && S.genre===g;
   return ['Mind',...GENRES.map(g=>g[0])].map(g=>{const c=g==='Mind'?'var(--ink)':GENRES.find(x=>x[0]===g)[1];
-    return `<button class="gchip${on(g)?' on':''}" data-act="genre" data-g="${g}" style="--gc:${c}">${g==='Mind'?'':'<span class="gdisc"><i>'+gIconApp(g)+'</i></span>'}${g==='Mind'?'Minden műfaj':g}</button>`;}).join('');
+    return `<button class="gchip${on(g)?' on':''}" data-act="genre" data-g="${g}" style="--gc:${c}">${g==='Mind'?'':'<span class="gdisc"><i>'+gPicApp(g)+'</i></span>'}${g==='Mind'?'Minden műfaj':g}</button>`;}).join('');
 }
 function genreChips(){
   const dot=c=>`<span class="cdot" style="--gc:${c}"></span>`;
