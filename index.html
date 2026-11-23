@@ -886,6 +886,10 @@ button.reportlink{background:none;border:0;padding:0;font:inherit;cursor:pointer
 .potd-n{display:none}
 .potd-f{gap:8px}.potd-f b{font-size:15px}.potd-f .btn.sm{padding:6px 11px;font-size:13px}.potd-f .potd-l{padding:5px 10px;font-size:12px}
 body.web .potd{grid-template-columns:150px minmax(0,1fr);gap:22px;padding:20px 24px}body.web .potd h2{font-size:26px}body.web .potd-n{display:block}
+/* 1.42 – hirdetésszám kicsiben a logó alatt */
+.lw .livecnt{display:flex;align-items:center;gap:4px;margin-top:3px;padding:0;border:0;background:none;font:inherit;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;line-height:1;letter-spacing:0;text-transform:none;font-stretch:100%;font-family:var(--body,inherit)}
+.lw .livecnt b{color:#e8650a;font-weight:900;font-size:11.5px;font-variant-numeric:tabular-nums}
+.lw .livecnt i{width:6px;height:6px;border-radius:50%;background:#2fbf71;animation:alive 1.8s infinite}
 </style>
 </head>
 <body>
@@ -2482,6 +2486,35 @@ function pcomBtn(p){ return `<button class="pcom" data-act="pcom" data-id="${p.i
 function pcomPanel(p){ if(!S.pcOpen.has(p.id)) return ''; const l=pcoms(p);
   return `<div class="pcoms">${l.length?l.map(c=>`<div class="pc">${uAv(c.user,28)}<div><p class="small"><button class="link plain" data-act="go" data-v="seller" data-id="${esc(c.user)}"><b>@${esc(uName(c.user))}</b></button> <span class="muted">${whenTs(c.at)}</span></p><p class="pct" data-notr>${esc(tx(c.text))}</p><p class="small">${c.user==='te'?`<button class="link small" data-act="pcdel" data-id="${p.id}" data-c="${c.id}">${LL('Törlés','Delete')}</button>`:reportMail(LL('hozzászólás','comment'),c.id,'@'+c.user+': '+tx(c.text).slice(0,80))}</p></div></div>`).join(''):`<p class="small muted">${LL('Még nincs hozzászólás. Légy te az első!','No comments yet. Be the first!')}</p>`}
     <div class="pcform"><textarea class="input" id="pct_${p.id}" rows="2" maxlength="500" placeholder="${LL('Írj hozzászólást…','Write a comment…')}"></textarea><button class="btn sm" data-act="pcsend" data-id="${p.id}">${LL('Küldés','Send')}</button></div></div>`; }
+/* „A nap lemeze”: minden ajánlóhoz saját szöveg – műfaj + a lemez jellemzői alapján, naponta más megfogalmazásban */
+const PN_GA = {
+  'Rock': [['Gitárok, dob, semmi köntörfalazás.', 'Guitars, drums, no beating about the bush.'], ['Ez a lemez hangosan szól a legjobban.', 'This one sounds best played loud.']],
+  'Jazz': [['Késő esti hallgatnivaló egy pohár mellé.', 'Late-night listening, best with a glass in hand.'], ['Improvizáció, ami ma is frissen szól.', 'Improvisation that still sounds fresh today.']],
+  'Hip-Hop': [['Ütemek és rímek a polc legjavából.', 'Beats and rhymes from the top shelf.'], ['Ezt a lemezt a crate diggerek is keresik.', 'Crate diggers are hunting for this one too.']],
+  'Electronic': [['Szintik és ütemek, fejhallgatóval az igazi.', 'Synths and beats – best on headphones.'], ['Klubhangzás otthonra, bakeliten.', 'Club sound for your living room, on wax.']],
+  'Pop': [['Dallamok, amik egész nap a fejedben maradnak.', 'Tunes that will stick in your head all day.'], ['Slágerek egy lemezen – sing-along garantált.', 'Hits on one record – sing-along guaranteed.']],
+  'Soul / R&B': [['Meleg hangok, sok groove.', 'Warm voices, plenty of groove.'], ['Szombat délelőtti kávé mellé tökéletes.', 'Perfect with a Saturday morning coffee.']],
+  'Reggae / Dub': [['Lassú basszus, napfényes hangulat.', 'Slow bass, sunny vibes.'], ['Mélyen szóló basszus, laza ritmus.', 'Deep bass, laid-back rhythm.']],
+  'Metal': [['Torzított gitárok, teljes hangerővel.', 'Distorted guitars, full volume.'], ['A szomszédok is megismerik – akár akarják, akár nem.', 'Your neighbours will get to know it too – like it or not.']],
+  'Blues': [['Tizenkét ütem, egy élet története.', 'Twelve bars, a whole life story.'], ['Gitár és hang, ahogy minden kezdődött.', 'Guitar and voice, where it all began.']],
+  'Folk / Country': [['Akusztikus gitár, történetek, őszinte hang.', 'Acoustic guitar, stories, an honest voice.'], ['Tábortűz-hangulat a nappaliba.', 'Campfire mood for the living room.']],
+  'Klasszikus': [['Teljes zenekar a nappalidban.', 'A full orchestra in your living room.'], ['Lemezen szól az igazán: mély, tiszta hangzás.', 'This is where it shines: deep, clear sound on vinyl.']],
+  '': [['Ma ezt választottuk ki neked a börzéről.', 'Today we picked this one for you from the fair.'], ['Ezt a lemezt érdemes közelebbről is megnézni.', 'This record deserves a closer look.']]
+};
+function pickNoteA(x, g0, r, day) {
+  var h = function (s) { return hm(day + '|' + x.id + '|' + s); };
+  var g = PN_GA[g0] || PN_GA[''], a = g[Math.floor(h('g') * g.length)];
+  var tags = x.tags || [], y = Number(r.y) || 0, det = [];
+  if (tags.indexOf('Bontatlan') > -1) det.push(['Még gyári fóliában, bontatlanul vár valakire.', 'Still sealed in the original shrink-wrap, waiting for someone.']);
+  if (tags.some(function (z) { return ['Limitált', 'Színes', 'Képes lemez', 'Japán kiadás'].indexOf(z) > -1; })) det.push(['Különleges kiadás – ilyet nem minden nap látni a börzén.', 'A special edition – you don’t see this every day at the fair.']);
+  if (y && y < 1980) det.push([y + '-es kiadás: valódi időutazás.', 'Released in ' + y + ': a real trip back in time.']);
+  else if (y && y < 2000) det.push(['A ' + (Math.floor(y / 10) * 10) + '-es évekből, ' + y + '-ből.', 'From the ' + (Math.floor(y / 10) * 10) + 's, ' + y + '.']);
+  if (['M', 'NM'].indexOf(x.media) > -1 && tags.indexOf('Bontatlan') < 0) det.push(['Szinte újszerű állapotban.', 'In near-mint condition.']);
+  if (x.price && x.price <= 3000) det.push(['Ennyiért kár lenne kihagyni.', 'At this price it would be a shame to miss.']);
+  if (!det.length) det.push(['Hallgass bele, mielőtt elviszi más.', 'Have a listen before someone else takes it home.']);
+  var b = det[Math.floor(h('d') * det.length)];
+  return LL(a[0] + ' ' + b[0], a[1] + ' ' + b[1]);
+}
 /* A nap lemeze – naponta másik műfajból (élesben a szerkesztőség választhat a Testreszabásban) */
 function potdApp(){
   const ok=active().filter(x=>x.photos&&x.photos[0]&&rel(x.rel)); if(!ok.length) return '';
@@ -2492,7 +2525,7 @@ function potdApp(){
   return `<section class="potd"><button class="potd-art" data-act="go" data-v="listing" data-id="${x.id}" aria-label="${esc(r.a+' – '+r.t)}"><span class="potd-vin" aria-hidden="true"></span><span class="potd-cov"><img src="${esc(x.photos[0])}" alt=""></span></button>
     <div class="potd-txt"><p class="potd-k"><span>★ ${LL('A nap lemeze','Record of the day')}</span>${LL('Szerkesztőségi ajánló','Editors’ pick')} · ${esc(g)}</p>
     <h2>${esc(r.t)}</h2><p class="potd-a">${esc(r.a)} <small>${[r.y,r.l].filter(Boolean).join(' · ')}</small></p>
-    <p class="potd-n">${LL('Ma a(z) '+g+' a soros. Ezt választottuk ki neked a börzéről – hallgass bele, mielőtt elviszi más.','Today it’s '+g+'’s turn. We picked this one from the fair – have a listen before someone else takes it home.')}</p>
+    <p class="potd-n">${esc(pickNoteA(x,g,r,day))}</p>
     <div class="potd-f"><b>${ft(x.price)}</b><button class="btn sm" data-act="go" data-v="listing" data-id="${x.id}">${LL('Megnézem','View')}</button><button class="hplisten potd-l" data-act="hplisten" data-id="${r.id}">▶ ${LL('Belehallgatok','Listen')}</button></div></div></section>`;
 }
 /* Bejelentés – többlépéses ablak; élesben a szerver küldi a panasz@ címre „Bejelentés” tárggyal */
@@ -2594,7 +2627,7 @@ function render(top=false){
   const canBack = S.stack.length>0;
   document.getElementById('topbar').innerHTML =
     (canBack?`<button class="iconbtn" data-act="back" aria-label="Vissza">${I.back}</button><span class="ttl">${S.view==='chat'?'@'+S.threads.find(t=>t.id===S.params.id).who:(TITLES[S.view]||'')}</span>`
-      : S.view==='home'?`<span class="logo"><span class="logodisc tt2" aria-hidden="true"><img class="ttrec" src="img/logo_record.png" alt=""><img class="ttarm" src="img/logo_arm.png" alt=""></span><span class="lw"><b>waxin</b><small>Vinyl. People. Culture.</small></span></span><button class="livepill" data-act="go" data-v="search" aria-label="${LL(active().length+' lemez most a börzén',active().length+' records live now')}"><i aria-hidden="true"></i><b>${active().length.toLocaleString(LL('hu-HU','en-GB'))}</b><span>${LL('lemez','records')}</span><em>${LL(' most a börzén',' live now')}</em></button><span class="spacer"></span>`
+      : S.view==='home'?`<span class="logo"><span class="logodisc tt2" aria-hidden="true"><img class="ttrec" src="img/logo_record.png" alt=""><img class="ttarm" src="img/logo_arm.png" alt=""></span><span class="lw"><b>waxin</b><small>Vinyl. People. Culture.</small><button class="livecnt" data-act="go" data-v="search" title="${LL('Ennyi hirdetés érhető el most a börzén','Listings available on the fair right now')}"><i aria-hidden="true"></i><b>${active().length.toLocaleString(LL('hu-HU','en-GB'))}</b> ${LL('eladó lemez','for sale')}</button></span></span><span class="spacer"></span>`
       : `<span class="ttl" style="font-family:var(--display);font-stretch:85%;font-weight:800;font-size:22px">${TITLES[S.view]}</span>`)
     + (S.view!=='notifs'&&S.view!=='chat'?`<button class="iconbtn" data-act="go" data-v="notifs" aria-label="Értesítések">${I.bell}${unreadNotifs()?`<span class="badge" style="background:var(--orange)">${unreadNotifs()}</span>`:''}</button>`:'')
     + (S.view!=='wish'&&S.view!=='chat'?`<button class="iconbtn" data-act="go" data-v="wish" aria-label="Kívánságlista">${I.heart}${S.wish.size?`<span class="badge">${S.wish.size}</span>`:''}</button>`:'')
