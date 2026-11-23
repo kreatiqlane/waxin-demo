@@ -753,8 +753,11 @@ body.web #genrebar::-webkit-scrollbar-thumb,body.web .chips::-webkit-scrollbar-t
 .leitem>span{display:grid;gap:6px;min-width:0}
 .lebtn{display:flex;gap:4px}.lebtn button{border:1px solid var(--line);background:var(--surface);border-radius:8px;width:30px;height:30px;cursor:pointer;font:inherit}
 .pubsw{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px}
-.crsec{margin:0 0 18px;padding:16px;border-radius:18px;background:var(--card);border:1px solid var(--line)}
-.crtop{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+.crsec{margin:0 0 18px;padding:18px 16px 14px;border-radius:20px;background:radial-gradient(420px 260px at 50% 22%,#43210d 0,transparent 70%),#14100e;color:#f4ede5;overflow:hidden}
+.crtop{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+.crbox{min-width:0}
+.crsec .muted{color:#a3988d}
+.crsec a,.crsec .link{color:#F25C05}
 .crtt-wrap{max-width:240px;margin:0 auto;width:100%;text-align:center}
 .crtt{width:100%;max-width:260px;margin:0 auto;user-select:none;-webkit-user-select:none}
 .crtt svg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 16px 28px #00000040)}
@@ -762,12 +765,13 @@ body.web #genrebar::-webkit-scrollbar-thumb,body.web .chips::-webkit-scrollbar-t
 .crtt.swap .recw{transform:translateY(-28%) scale(.62);opacity:0}
 .crtt .rec,.crtt .arm,.crtt .vol,.crtt .pitch{cursor:grab;touch-action:none}
 .crtt .ttbtn,.crtt .spdb,.crtt .cue{cursor:pointer}
-.crsub{font-size:13px;margin-top:12px;line-height:1.45}
+.crsub{font-size:13px;margin-top:12px;line-height:1.45;text-align:left;padding:10px 12px;border-radius:12px;background:#ffffff0d;border:1px solid #ffffff1a;min-height:56px}
 .crhead{display:flex;gap:8px;align-items:baseline;margin-bottom:8px;flex-wrap:wrap}
 .crrow{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:thin}
-.crcard{flex:none;width:112px;text-align:left;scroll-snap-align:start;transition:transform .2s}
+.crcard{flex:none;width:112px;text-align:left;scroll-snap-align:start;transition:transform .2s;border:0;background:none;padding:0;color:inherit;font:inherit;cursor:pointer}
+.crcard.on .crcov{outline:3px solid #F25C05;outline-offset:3px}
 .crcard:hover{transform:translateY(-3px)}
-.crcov{display:block;width:112px;height:112px;border-radius:10px;overflow:hidden;box-shadow:0 6px 16px #00000026}
+.crcov{display:block;width:112px;height:112px;border-radius:10px;overflow:hidden;box-shadow:0 8px 18px #0008;background:#2a2421}
 .crcov>*{width:100%;height:100%;display:block}
 .crcard>span:last-child{display:block;font-size:12px;font-weight:600;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:112px}
 </style>
@@ -2223,7 +2227,7 @@ class CrTT{
    n.addEventListener('pointermove',e=>{if(d)h.move(e)}); const up=()=>{if(!d)return; d=false; h.up&&h.up()}; n.addEventListener('pointerup',up); n.addEventListener('pointercancel',up) }
  pt(e){ const r=this.svg.getBoundingClientRect(), s=374/r.width; return {x:(e.clientX-r.left)*s, y:(e.clientY-r.top)*s} }
  ang(e){ const p=this.pt(e); return Math.atan2(p.y-277,p.x-193)*180/Math.PI }
- setLab(x){ this.item=x||null; this.lab.innerHTML=x?crLab(rel(x.rel)):'' }
+ setLab(x){ this.item=x||null; if(!x){ this.lab.innerHTML=''; return } const src=(x.photos&&x.photos[0])||''; const m=(cover(rel(x.rel),{photo:src}).match(/<img[^>]*src="([^"]+)"/)||[])[1]||src; this.lab.innerHTML=m?`<image href="${esc(m)}" x="141" y="225" width="104" height="104" preserveAspectRatio="xMidYMid slice"/><circle cx="193" cy="277" r="50" fill="none" stroke="#00000030" stroke-width="4"/>`:crLab(rel(x.rel)) }
  armTo(t){ this.cancelMove(); return new Promise(res=>{this.armT=t; this.armRes=res}) }
  cancelMove(){ const r=this.armRes; this.armRes=null; this.armT=null; r&&r(false) }
  lower(p){ this.cancelMove(); this.armDown=true; this.pos=Math.max(0,Math.min(CRPV-.5,p||0)); this.arm=CRA0+this.pos/CRPV*(CRA1-CRA0); this.startAudio() }
@@ -2512,7 +2516,7 @@ document.addEventListener('click', e=>{
   switch(a){
     case 'go': if(d.v==='cart'||S.view!==d.v||d.id!==S.params.id) go(d.v,{id:d.id}); break;
     case 'back': back(); break;
-    case 'crpick': { const el=document.querySelector('[data-crate-tt]'); const x=active().find(q=>String(q.id)===String(d.id)); if(el&&el._cr&&x) el._cr.load(x); return; }
+    case 'crpick': { const el=document.querySelector('[data-crate-tt]'); const x=active().find(q=>String(q.id)===String(d.id)); if(el&&el._cr&&x){ document.querySelectorAll('.crcard.on').forEach(o=>o.classList.remove('on')); const el2=document.querySelector('.crcard[data-id="'+d.id+'"]'); el2&&el2.classList.add('on'); el._cr.load(x); } return; }
     case 'tab': if(WX&&!S.me&&(d.v==='sell'||d.v==='profile')){ openAuth('welcome'); break; } tab(d.v); break;
     case 'fmt': S.fmt=d.f; S.vt='Mind'; if(!['search','home'].includes(S.view)){S.stab='list';S.stack=[];S.view='search';S.params={};render(true);} else render(); break;
     case 'vt': S.vt=d.v; render(); break;
