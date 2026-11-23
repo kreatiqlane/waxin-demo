@@ -2181,11 +2181,12 @@ const CRPREV=new Map();
 function crSample(r){
   if(!r) return Promise.resolve(null);
   if(CRPREV.has(r.id)) return CRPREV.get(r.id);
-  const p=(async()=>{try{
-      const u='https://itunes.apple.com/search?entity=song&limit=1&media=music&term='+encodeURIComponent(r.a+' '+r.t);
-      const j=await (await fetch(u)).json(); const x=j.results&&j.results[0];
-      return x&&x.previewUrl?{src:x.previewUrl,link:x.trackViewUrl||x.collectionViewUrl||'',name:x.trackName||r.t}:null;
-    }catch(e){ return null }})();
+  const p=new Promise(res=>{ const cb='wxIt'+(++crN)+'_'+Date.now(), sc=document.createElement('script'); let done=false;
+    const fin=v=>{ if(done) return; done=true; try{delete window[cb]}catch(e){} sc.remove(); res(v); };
+    window[cb]=j=>{ const rs=(j&&j.results||[]).filter(o=>o.previewUrl); const w=(r.a||'').toLowerCase().split(/[ &,]+/)[0]; const x=rs.find(o=>(o.artistName||'').toLowerCase().includes(w))||rs[0];
+      fin(x?{src:x.previewUrl,link:x.trackViewUrl||x.collectionViewUrl||'',name:x.trackName||r.t}:null); };
+    sc.src='https://itunes.apple.com/search?media=music&entity=song&limit=5&term='+encodeURIComponent(r.a+' '+r.t)+'&callback='+cb;
+    sc.onerror=()=>fin(null); setTimeout(()=>fin(null),8000); document.head.appendChild(sc); });
   CRPREV.set(r.id,p); return p;
 }
 const crWait=ms=>new Promise(res=>setTimeout(res,ms));
